@@ -5,7 +5,7 @@
 ## Ссылки
 
 - [Опубликованная страница на GitHub Pages](https://dianasubaeva.github.io/Todolist/)
-- [Репозиторий проекта](https://github.com/DianaSubaeva/todo-list)
+- [Репозиторий проекта](https://github.com/DianaSubaeva/Todolist)
 
 ## Автор
 
