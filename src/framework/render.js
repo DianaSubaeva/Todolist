@@ -1,32 +1,23 @@
-const RenderPosition = {
+  const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
-  AFTERBEGIN: 'afterbegin', 
+  AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
   AFTEREND: 'afterend',
 };
 
+
 function createElement(template) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(template, 'text/html');
-  return doc.body.firstElementChild;
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+
+  return newElement.firstElementChild;
 }
 
-function createElementManual(tagName, className, content) {
-  const element = document.createElement(tagName);
-  if (className) {
-    element.className = className;
-  }
-  if (content) {
-    element.textContent = content;
-  }
-  return element;
-}
 
 function render(component, container, place = RenderPosition.BEFOREEND) {
-  const element = component.getElement();
-  if (element && container) {
-    container.insertAdjacentElement(place, element);
-  }
+container.insertAdjacentElement(place, component.getElement());
 }
 
-export {RenderPosition, createElement, createElementManual, render};
+
+export {RenderPosition, createElement, render};

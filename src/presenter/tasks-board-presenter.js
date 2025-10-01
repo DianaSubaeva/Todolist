@@ -1,11 +1,11 @@
 import TaskBoardComponent from '../view/task-board-component.js';
 import TaskListComponent from '../view/task-list-component.js';
 import TaskComponent from '../view/task-component.js';
+import ClearButtonComponent from '../view/clear-button-component.js'; 
 import {render} from '../framework/render.js';
-import ClearButtonComponent from '../view/clear-button-component.js';
 import {TaskStatus} from '../const.js';
 
-export default class TaskBoardPresenter {
+export default class TasksBoardPresenter {
   #boardContainer = null;
   #taskModel = null;
   #taskBoardComponent = new TaskBoardComponent();
@@ -13,7 +13,7 @@ export default class TaskBoardPresenter {
 
   constructor({boardContainer, taskModel}) {
     this.#boardContainer = boardContainer;
-    this.#taskModel = taskModel; // Исправлено: было tasksModel
+    this.#taskModel = taskModel;
   }
 
   init() {
@@ -22,13 +22,11 @@ export default class TaskBoardPresenter {
     render(this.#taskBoardComponent, this.#boardContainer);
     
     const statuses = [TaskStatus.BACKLOG, TaskStatus.PROCESSING, TaskStatus.DONE, TaskStatus.BIN];
-    const listComponents = {}; // Добавлено: хранилище для компонентов списков
-    
+    const listComponents = {}; 
     for (const status of statuses) {
       const taskListComponent = new TaskListComponent(status);
       render(taskListComponent, this.#taskBoardComponent.getElement());
       
-      // Сохраняем компонент для дальнейшего использования
       listComponents[status] = taskListComponent;
 
       const filteredTasks = this.#boardTasks.filter(task => task.status === status);
@@ -40,8 +38,7 @@ export default class TaskBoardPresenter {
         render(taskComponent, ul);
       }
     }
-    
-    // Рендерим кнопку очистки в колонке корзины
-    render(new ClearButtonComponent(), listComponents[TaskStatus.BIN].getElement()); // Исправлено: было Status.CART
+    const clearButtonComponent = new ClearButtonComponent();
+    render(clearButtonComponent, listComponents[TaskStatus.BIN].getElement());
   }
 }
