@@ -1,17 +1,27 @@
 import { createElement } from "../framework/render.js";
 
-function createTaskComponentTemplate() {
-    return (
-        `
-        <div class="task backlog-task">Выучить JS</div>
-         
-        `
-      );
+function createTaskComponentTemplate(task) {
+  const {title, status} = task;
+  
+  return (
+    `<div class="taskboard_item task task--${status}">
+      <div class="task__body">
+        <p class="task--view">${title}</p>
+        <input type="text" class="task--input" />
+      </div>
+      <button aria-label="Edit" class="task__edit" type="button"></button>
+    </div>`
+  );
 }
 
 export default class TaskComponent  {
+
+  constructor({task}) {
+    this.task = task;
+    }
+
   getTemplate() {
-    return createTaskComponentTemplate();
+    return createTaskComponentTemplate(this.task);
   }
 
   getElement() {
