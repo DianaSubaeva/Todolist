@@ -9,12 +9,11 @@ function createPlugTemplate(status) {
     'bin': 'Корзина'
   };
 
-  return (`
+  return `
     <div class="task-list__empty">
-      <p>${statusText[status] || 'Список'}</p>
       <p>Перетащите карточку</p>
     </div>
-  `);
+  `;
 }
 
 export default class PlugComponent extends AbstractComponent {

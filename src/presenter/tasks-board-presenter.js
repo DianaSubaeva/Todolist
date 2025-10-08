@@ -2,6 +2,7 @@ import TaskBoardComponent from '../view/task-board-component.js';
 import TaskListComponent from '../view/task-list-component.js';
 import TaskComponent from '../view/task-component.js';
 import ClearButtonComponent from '../view/clear-button-component.js';
+import PlugComponent from '../view/plug-component.js'; 
 import { render } from '../framework/render.js';
 import { TaskStatus, TaskStatusTitles } from '../const.js';
 
@@ -35,15 +36,19 @@ export default class TasksBoardPresenter {
 
   #renderTasksList(status, label) {
     const listComponent = new TaskListComponent(status);
-    render(listComponent, this.#taskBoardComponent.getElement());
+    render(listComponent, this.#taskBoardComponent.element);
 
     const tasks = this.#boardTasks.filter((task) => task.status === status);
-    const tasksContainer = listComponent.getElement().querySelector('.tasks_list');
+    const tasksContainer = listComponent.element.querySelector('.tasks_list');
 
-    tasks.forEach((task) => this.#renderTask(task, tasksContainer));
+    if (tasks.length === 0) {
+      this.#renderPlug(status, tasksContainer); 
+    } else {
+      tasks.forEach((task) => this.#renderTask(task, tasksContainer));
+    }
 
     if (status === TaskStatus.BIN) {
-      this.#renderClearButton(listComponent.getElement());
+      this.#renderClearButton(listComponent.element);
     }
   }
 
@@ -55,5 +60,10 @@ export default class TasksBoardPresenter {
   #renderClearButton(container) {
     const button = new ClearButtonComponent();
     render(button, container);
+  }
+
+  #renderPlug(status, container) { 
+    const plugComponent = new PlugComponent({status: status.toLowerCase()});
+    render(plugComponent, container);
   }
 }

@@ -46,14 +46,5 @@ export const tasks = [
     title: "Позвонить другу",
     status: TaskStatus.DONE,
   },
-  {
-    id: "10",
-    title: "Прочитать Войну и мир",
-    status: TaskStatus.BIN,
-  },
-  {
-    id: "11",
-    title: "Съездить погулять", 
-    status: TaskStatus.BIN,
-  }
+
 ];

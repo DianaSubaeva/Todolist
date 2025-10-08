@@ -8,7 +8,7 @@ function createClearButtonTemplate() {
 }
 
 export default class ClearButtonComponent extends AbstractComponent {
-  getTemplate() {
+  get template() {
     return createClearButtonTemplate();
   }
 }
