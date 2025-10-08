@@ -185,3 +185,21 @@ h2 {
 .task-list[data-status="Bin"] .task-list__title {
   color: #f44336;
 }
+.task-list__empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 14px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.task-list__empty p {
+  margin: 0 0 8px 0;
+}
+
+.task-list__empty p:first-child {
+  font-weight: 500;
+  color: #374151;
+}

@@ -1,32 +1,21 @@
 import {createElement} from '../framework/render.js'; 
+import { AbstractComponent } from '../framework/view/abstract-component.js';
 
-
-function createHeaderComponentTemplate() {
-    return (
-        `<head>
+function createHeaderTemplate() {
+  return (
+     `<head>
     <title>Субаева Диана Ильдаровна - Список задач</title>
     <head>`
-      );
+  )
+  ;
 }
 
-
-export default class HeaderComponent {
-  getTemplate() {
-    return createHeaderComponentTemplate();
+export default class HeaderComponent extends AbstractComponent {
+  constructor() {
+    super();
   }
 
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-
-    return this.element;
-  }
-
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createHeaderTemplate();
   }
 }
