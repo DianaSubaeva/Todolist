@@ -3,17 +3,12 @@ import FormAddTaskComponent from './view/form-add-task-component.js';
 import TaskBoardPresenter from './presenter/tasks-board-presenter.js';
 import {render, RenderPosition} from './framework/render.js';
 import TaskModel from './model/task-model.js';
+import { tasks } from './mock/task.js';
 
 const bodyContainer= document.querySelector('.board-app');
 const formContainer= document.querySelector('.add-task-form');
 const taskBoardContainer = document.querySelector('.task-board');
-const taskModel = new TaskModel();
-
-console.log('Containers found:');
-console.log('bodyContainer:', bodyContainer);
-console.log('formContainer:', formContainer);
-console.log('taskBoardContainer:', taskBoardContainer);
-console.log('taskModel tasks:', taskModel.tasks);
+const taskModel = new TaskModel(tasks);
 
 
 const taskBoardPresenter = new TaskBoardPresenter({
@@ -21,9 +16,7 @@ const taskBoardPresenter = new TaskBoardPresenter({
     tasksModel: taskModel,
 });
 
-const formAddTaskComponent = new FormAddTaskComponent({
-  onClick: handleNewTaskButtonClick
-});
+const formAddTaskComponent = new FormAddTaskComponent(handleNewTaskButtonClick);
 
 function handleNewTaskButtonClick() {
   taskBoardPresenter.createTask();

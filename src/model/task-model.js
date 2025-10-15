@@ -39,4 +39,10 @@ export default class TaskModel {
   _notifyObservers() {
     this.#observers.forEach((observer) => observer());
   }
+
+  clearBin() {
+  const binTasksCount = this.#boardTasks.filter(task => task.status === 'bin').length;
+  this.#boardTasks = this.#boardTasks.filter(task => task.status !== 'bin');
+  this._notifyObservers();
+}
 }

@@ -4,22 +4,22 @@ export const tasks = [
   {
     id: "1",
     title: "Сходить в магазин",
-    status: TaskStatus.BACKLOG,
+    status: TaskStatus.BIN,
   },
   {
     id: "2", 
     title: "Пойти погулять",
-    status: TaskStatus.BACKLOG,
+    status: TaskStatus.BIN,
   },
   {
     id: "3",
     title: "Устроиться на работу", 
-    status: TaskStatus.BACKLOG,
+    status: TaskStatus.BIN,
   },
   {
     id: "4",
     title: "Почитать книгу",
-    status: TaskStatus.BACKLOG,
+    status: TaskStatus.BIN,
   },
   {
     id: "5",

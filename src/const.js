@@ -1,8 +1,8 @@
 export const TaskStatus = {
-  BACKLOG: 'Backlog',
-  PROCESSING: 'Processing', 
-  DONE: 'Done',
-  BIN: 'Bin'
+  BACKLOG: 'backlog',
+  PROCESSING: 'processing', 
+  DONE: 'done',
+  BIN: 'bin'
 };
 
 export const TaskStatusTitles = {

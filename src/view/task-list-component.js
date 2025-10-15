@@ -3,10 +3,10 @@ import { AbstractComponent } from '../framework/view/abstract-component.js';
 import { TaskStatusTitles } from '../const.js';
 function getColumnClass(status) {
     switch(status) {
-        case 'Backlog': return 'backlog-column';
-        case 'Processing': return 'progress-column';
-        case 'Done': return 'done-column';
-        case 'Bin': return 'trash-column';
+        case 'backlog': return 'backlog-column';
+        case 'processing': return 'progress-column';
+        case 'done': return 'done-column';
+        case 'bin': return 'trash-column';
         default: return '';
     }
 }

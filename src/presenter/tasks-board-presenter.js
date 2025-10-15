@@ -7,36 +7,47 @@ import { render } from '../framework/render.js';
 import { TaskStatus, TaskStatusTitles } from '../const.js';
 
 export default class TasksBoardPresenter {
-  #taskBoardComponent = new TaskBoardComponent();
+  #taskBoardComponent = null;
   #boardContainer = null;
   #tasksModel = null;
   #boardTasks = [];
+   #clearButton = null;
 
-  constructor({boardContainer, tasksModel}) {
+  constructor({ boardContainer, tasksModel }) {
     this.#boardContainer = boardContainer;
     this.#tasksModel = tasksModel;
 
+    this.#taskBoardComponent = new TaskBoardComponent();
+    render(this.#taskBoardComponent, this.#boardContainer);
+
     this.#tasksModel.addObserver(this.#handleModelChange.bind(this));
-}
- get tasks() {
+  }
+
+  get tasks() {
     return this.#tasksModel.tasks;
   }
- #handleModelChange() {
-    console.log('Модель изменилась - перерисовываем доску');
+
+  #handleModelChange() {
     this.init(); 
-}
- #clearBoard() {
-    this.#taskBoardComponent.element.innerHTML = '';
+
+    this.#updateClearButtonState();
+  }
+
+  #clearBoard() {
+    // Безопасная очистка - удаляем все дочерние элементы
+    while (this.#taskBoardComponent.element.firstChild) {
+      this.#taskBoardComponent.element.removeChild(this.#taskBoardComponent.element.firstChild);
+    }
   }
 
   init() {
-     this.#clearBoard();
-    this.#boardTasks = [...this.tasks];
-
     if (!this.#taskBoardComponent.element.parentElement) {
       this.#taskBoardComponent = new TaskBoardComponent();
       render(this.#taskBoardComponent, this.#boardContainer);
     }
+    
+    this.#clearBoard();
+    this.#boardTasks = [...this.tasks];
 
     const lists = [
       { status: TaskStatus.BACKLOG, label: TaskStatusTitles[TaskStatus.BACKLOG] },
@@ -45,9 +56,12 @@ export default class TasksBoardPresenter {
       { status: TaskStatus.BIN, label: TaskStatusTitles[TaskStatus.BIN] },
     ];
 
+  
+
     for (const { status, label } of lists) {
       this.#renderTasksList(status, label);
     }
+    
   }
 
   createTask() {
@@ -61,16 +75,46 @@ export default class TasksBoardPresenter {
     document.querySelector('#add-task').value = '';
   }
 
+   #handleClearBin() {
+    this.#tasksModel.clearBin();
+  }
+  #updateClearButtonState() {
+    if (this.#clearButton) {
+      this.#clearButton.disabled = !hasBinTasks;
+    }
+
+
+  }
+
+
   #renderTasksList(status, label) {
+    
     const listComponent = new TaskListComponent(status);
+    
+    if (!this.#taskBoardComponent.element) {
+      console.error('TASK BOARD ELEMENT IS NULL!');
+      return;
+    }
+    
     render(listComponent, this.#taskBoardComponent.element);
+  
 
     const tasks = this.tasks.filter((task) => task.status === status);
-    const tasksContainer = listComponent.element.querySelector('.tasks_list');
+   
+
+    const tasksContainer = listComponent.element.querySelector('ul.tasks_list');
+  
+    if (!tasksContainer) {
+      console.error('TASKS CONTAINER NOT FOUND!');
+      
+      return;
+    }
 
     if (tasks.length === 0) {
+      
       this.#renderPlug(status, tasksContainer); 
     } else {
+     
       tasks.forEach((task) => this.#renderTask(task, tasksContainer));
     }
 
@@ -84,13 +128,22 @@ export default class TasksBoardPresenter {
     render(taskComponent, container);
   }
 
-  #renderClearButton(container) {
-    const button = new ClearButtonComponent();
-    render(button, container);
+ #renderClearButton(container) {
+    const hasBinTasks = this.tasks.some(task => task.status === 'bin');
+    
+    const button = document.createElement('button');
+    button.className = 'clear-btn';
+    button.textContent = 'Очистить корзину';
+    button.disabled = !hasBinTasks;
+    
+    button.addEventListener('click', () => this.#handleClearBin());
+    
+    container.appendChild(button);
+    this.#clearButton = button; 
   }
 
   #renderPlug(status, container) { 
-    const plugComponent = new PlugComponent({status: status.toLowerCase()});
+    const plugComponent = new PlugComponent({ status: status.toLowerCase() });
     render(plugComponent, container);
   }
 }
