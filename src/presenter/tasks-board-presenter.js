@@ -9,18 +9,34 @@ import { TaskStatus, TaskStatusTitles } from '../const.js';
 export default class TasksBoardPresenter {
   #taskBoardComponent = new TaskBoardComponent();
   #boardContainer = null;
-  #taskModel = null;
+  #tasksModel = null;
   #boardTasks = [];
 
-  constructor({ boardContainer, taskModel }) {
+  constructor({boardContainer, tasksModel}) {
     this.#boardContainer = boardContainer;
-    this.#taskModel = taskModel;
+    this.#tasksModel = tasksModel;
+
+    this.#tasksModel.addObserver(this.#handleModelChange.bind(this));
+}
+ get tasks() {
+    return this.#tasksModel.tasks;
+  }
+ #handleModelChange() {
+    console.log('Модель изменилась - перерисовываем доску');
+    this.init(); 
+}
+ #clearBoard() {
+    this.#taskBoardComponent.element.innerHTML = '';
   }
 
   init() {
-    this.#boardTasks = [...this.#taskModel.tasks];
+     this.#clearBoard();
+    this.#boardTasks = [...this.tasks];
 
-    render(this.#taskBoardComponent, this.#boardContainer);
+    if (!this.#taskBoardComponent.element.parentElement) {
+      this.#taskBoardComponent = new TaskBoardComponent();
+      render(this.#taskBoardComponent, this.#boardContainer);
+    }
 
     const lists = [
       { status: TaskStatus.BACKLOG, label: TaskStatusTitles[TaskStatus.BACKLOG] },
@@ -34,11 +50,22 @@ export default class TasksBoardPresenter {
     }
   }
 
+  createTask() {
+    const taskTitle = document.querySelector('#add-task').value.trim();
+    
+    if (!taskTitle) {
+      return;
+    }
+
+    this.#tasksModel.addTask(taskTitle);
+    document.querySelector('#add-task').value = '';
+  }
+
   #renderTasksList(status, label) {
     const listComponent = new TaskListComponent(status);
     render(listComponent, this.#taskBoardComponent.element);
 
-    const tasks = this.#boardTasks.filter((task) => task.status === status);
+    const tasks = this.tasks.filter((task) => task.status === status);
     const tasksContainer = listComponent.element.querySelector('.tasks_list');
 
     if (tasks.length === 0) {
