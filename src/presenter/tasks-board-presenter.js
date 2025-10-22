@@ -75,26 +75,27 @@ export default class TasksBoardPresenter {
     document.querySelector('#add-task').value = '';
   }
 
-   #handleClearBin() {
+  #handleTaskDrop(taskId, newStatus) {
+    this.#tasksModel.updateTaskStatus(taskId, newStatus);
+  }
+
+  #handleClearBin() {
     this.#tasksModel.clearBin();
   }
+
   #updateClearButtonState() {
     if (this.#clearButton) {
+      const hasBinTasks = this.tasks.some(task => task.status === 'bin'); 
       this.#clearButton.disabled = !hasBinTasks;
     }
-
-
   }
 
-
   #renderTasksList(status, label) {
-    
-    const listComponent = new TaskListComponent(status);
-    
-    if (!this.#taskBoardComponent.element) {
-      console.error('TASK BOARD ELEMENT IS NULL!');
-      return;
-    }
+    const listComponent = new TaskListComponent({
+      status: status,
+      label: label,
+      onTaskDrop: this.#handleTaskDrop.bind(this)  
+    });
     
     render(listComponent, this.#taskBoardComponent.element);
   
