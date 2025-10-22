@@ -11,7 +11,7 @@ function getColumnClass(status) {
     }
 }
 
-function createTaskListTemplate(status) {
+function createTaskListComponent(status) {
     const title = TaskStatusTitles[status] || status;
     const columnClass = getColumnClass(status); 
   return  `<div class="task-column ${columnClass}" data-status="${status}">
@@ -21,14 +21,51 @@ function createTaskListTemplate(status) {
 }
 
 export default class TaskListComponent extends AbstractComponent {
-  #status = null;
-
-  constructor(status) {
+  constructor({ status, label, onTaskDrop }) {
     super();
-    this.#status = status;
+    this.status = status;
+    this.label = label;
+    this.#setDropHandler(onTaskDrop);
   }
 
   get template() {
-    return createTaskListTemplate(this.#status);
+    return createTaskListComponent(this.status, this.label);
   }
+
+  #setDropHandler(onTaskDrop) {
+    const container = this.element;
+
+    container.addEventListener('dragover', (event) => {
+      event.preventDefault();
+    });
+
+    container.addEventListener('drop', (event) => {
+      event.preventDefault();
+      const taskId = event.dataTransfer.getData('text/plain');
+      const dropPosition = this.#getDropPosition(event);
+      onTaskDrop(taskId, this.status, dropPosition); 
+    });
+  }
+  #getDropPosition(event) {
+  const tasks = this.element.querySelectorAll('.task');
+  const containerRect = this.element.getBoundingClientRect();
+  const mouseY = event.clientY - containerRect.top;
+
+
+  if (tasks.length === 0) {
+    return 0;
+  }
+  
+  for (let i = 0; i < tasks.length; i++) {
+    const taskRect = tasks[i].getBoundingClientRect();
+    const taskTop = taskRect.top - containerRect.top;
+    const taskMiddle = taskTop + taskRect.height / 2;
+    
+    if (mouseY < taskMiddle) {
+      return i; 
+    }
+  }
+  
+  return tasks.length; 
+}
 }

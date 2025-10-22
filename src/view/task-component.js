@@ -11,7 +11,7 @@ function getTaskClass(status) {
     }
 }
 
-function createTaskTemplate(task) {
+function createTaskComponentTemplate(task) {
   const {title, status} = task;
   const taskClass = getTaskClass(status);
   
@@ -24,14 +24,25 @@ function createTaskTemplate(task) {
 }
 
 export default class TaskComponent extends AbstractComponent {
-  #task = null;
-
-  constructor({task}) {
+  constructor({ task }) {
     super();
-    this.#task = task;
+    this.task = task;
+    this.#afterCreateElement();
   }
 
   get template() {
-    return createTaskTemplate(this.#task);
+    return createTaskComponentTemplate(this.task);
+  }
+
+  #afterCreateElement() {
+    this.#makeTaskDraggable();
+  }
+
+  #makeTaskDraggable() {
+    this.element.setAttribute('draggable', true);
+
+    this.element.addEventListener('dragstart', (event) => {
+      event.dataTransfer.setData('text/plain', this.task.id);
+    });
   }
 }

@@ -75,8 +75,8 @@ export default class TasksBoardPresenter {
     document.querySelector('#add-task').value = '';
   }
 
-  #handleTaskDrop(taskId, newStatus) {
-    this.#tasksModel.updateTaskStatus(taskId, newStatus);
+  #handleTaskDrop(taskId, newStatus, position) {
+    this.#tasksModel.updateTaskStatus(taskId, newStatus, position);
   }
 
   #handleClearBin() {
@@ -94,7 +94,7 @@ export default class TasksBoardPresenter {
     const listComponent = new TaskListComponent({
       status: status,
       label: label,
-      onTaskDrop: this.#handleTaskDrop.bind(this)  
+      onTaskDrop: this.#handleTaskDrop.bind(this)
     });
     
     render(listComponent, this.#taskBoardComponent.element);

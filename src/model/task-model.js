@@ -45,4 +45,24 @@ export default class TaskModel {
   this.#boardTasks = this.#boardTasks.filter(task => task.status !== 'bin');
   this._notifyObservers();
 }
+
+  updateTaskStatus(taskId, newStatus, position = null) {  
+   const taskIndex = this.#boardTasks.findIndex(task => task.id === taskId);
+  if (taskIndex === -1) return;
+  
+  const task = this.#boardTasks[taskIndex];
+
+  this.#boardTasks.splice(taskIndex, 1);
+
+  task.status = newStatus;
+  
+  if (position !== null) {
+    this.#boardTasks.splice(position, 0, task);
+  } else {
+    this.#boardTasks.push(task);
+  }
+    this._notifyObservers();
+  
 }
+}
+
