@@ -1,68 +1,105 @@
-import { tasks } from '../mock/task.js';
+import Observable from '../framework/observable.js';
 import { generateID } from '../utils.js';
+import { UserAction, UpdateType } from '../const.js';
 
-
-export default class TaskModel {
+export default class TasksModel extends Observable {
+  #tasksApiService = null;
   #boardTasks = [];
-  #observers = [];
 
-  constructor(tasks = []) {
-    this.#boardTasks = tasks;
+  constructor({tasksApiService}) {
+    super();
+    this.#tasksApiService = tasksApiService;
   }
 
   get tasks() {
     return this.#boardTasks;
   }
 
-  getTasksByStatus(status) {
-    return this.#boardTasks.filter(task => task.status === status);
+  async init() {
+    try {
+      const tasks = await this.#tasksApiService.tasks;
+      this.#boardTasks = tasks;
+    } catch(err) {
+      this.#boardTasks = [];
+    }
+    this._notify(UpdateType.INIT);
   }
-   addTask(title) {
+
+  async addTask(title) {
     const newTask = {
       title,
       status: 'backlog',
-      id: generateID(), 
+      id: generateID(),
     };
-        this.#boardTasks.push(newTask);
-    this._notifyObservers();
-    return newTask;
+    try {
+      const createdTask = await this.#tasksApiService.addTask(newTask);
+      this.#boardTasks.push(createdTask);
+      this._notify(UserAction.ADD_TASK, createdTask);
+      return createdTask;
+    } catch (err) {
+      console.error('Ошибка при добавлении задачи на сервер:', err);
+      throw err;
+    }
   }
 
-  addObserver(observer) {
-    this.#observers.push(observer);
+  // ДОБАВЛЕННЫЙ МЕТОД ДЛЯ РЕДАКТИРОВАНИЯ ЗАДАЧИ
+  async updateTask(taskId, newTitle) {
+    const task = this.#boardTasks.find(task => task.id === taskId);
+    if (task) {
+      const previousTitle = task.title;
+      task.title = newTitle;
+
+      try {
+        const updatedTask = await this.#tasksApiService.updateTask(task);
+        Object.assign(task, updatedTask);
+        this._notify(UserAction.UPDATE_TASK, task);
+      } catch (err) {
+        console.error('Ошибка при обновлении задачи на сервер:', err);
+        task.title = previousTitle; // Откатываем при ошибке
+        throw err;
+      }
+    }
   }
 
-  removeObserver(observer) {
-    this.#observers = this.#observers.filter((obs) => obs !== observer);
+  async updateTaskStatus(taskId, newStatus) {
+    const task = this.#boardTasks.find(task => task.id === taskId);
+    if (task) {
+      const previousStatus = task.status; 
+      task.status = newStatus;
+
+      try {
+        const updatedTask = await this.#tasksApiService.updateTask(task);
+        Object.assign(task, updatedTask);
+        this._notify(UserAction.UPDATE_TASK, task);
+      } catch (err) {
+        console.error('Ошибка при обновлении статуса задачи на сервер:', err);
+        task.status = previousStatus; 
+        throw err;
+      }
+    }
   }
 
-  _notifyObservers() {
-    this.#observers.forEach((observer) => observer());
+  deleteTask(taskId) {
+    this.#boardTasks = this.#boardTasks.filter(task => task.id !== taskId);
+    this._notify(UserAction.DELETE_TASK, { id: taskId });
   }
 
-  clearBin() {
-  const binTasksCount = this.#boardTasks.filter(task => task.status === 'bin').length;
-  this.#boardTasks = this.#boardTasks.filter(task => task.status !== 'bin');
-  this._notifyObservers();
+  async clearBasketTasks() {
+    const basketTasks = this.#boardTasks.filter(task => task.status === 'bin');
+
+    try {
+      await Promise.all(basketTasks.map(task => this.#tasksApiService.deleteTask(task.id)));
+
+      this.#boardTasks = this.#boardTasks.filter(task => task.status !== 'bin');
+      this._notify(UserAction.DELETE_TASK, { status: 'bin' });
+
+    } catch (err) {
+      console.error('Ошибка при удалении задач из корзины на сервере:', err);
+      throw err;
+    }
+  }
+
+  hasBasketTasks() {
+    return this.#boardTasks.some(task => task.status === 'bin');
+  }
 }
-
-  updateTaskStatus(taskId, newStatus, position = null) {  
-   const taskIndex = this.#boardTasks.findIndex(task => task.id === taskId);
-  if (taskIndex === -1) return;
-  
-  const task = this.#boardTasks[taskIndex];
-
-  this.#boardTasks.splice(taskIndex, 1);
-
-  task.status = newStatus;
-  
-  if (position !== null) {
-    this.#boardTasks.splice(position, 0, task);
-  } else {
-    this.#boardTasks.push(task);
-  }
-    this._notifyObservers();
-  
-}
-}
-

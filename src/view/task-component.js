@@ -12,21 +12,24 @@ function getTaskClass(status) {
 }
 
 function createTaskComponentTemplate(task) {
-  const {title, status} = task;
+  const {title, status, id} = task;
   const taskClass = getTaskClass(status);
   
-  return `<div class="task ${taskClass}">
+  return `<div class="task ${taskClass}" data-task-id="${id}">
       <div class="task__body">
         <p class="task--view">${title}</p>
       </div>
-      <button aria-label="Edit" class="task__edit" type="button"></button>
+      <button aria-label="Edit" class="task__edit" type="button">✏️</button>
     </div>`;
 }
 
 export default class TaskComponent extends AbstractComponent {
-  constructor({ task }) {
+  #handleEditClick = null;
+
+  constructor({ task, onEditClick }) {
     super();
     this.task = task;
+    this.#handleEditClick = onEditClick;
     this.#afterCreateElement();
   }
 
@@ -36,6 +39,7 @@ export default class TaskComponent extends AbstractComponent {
 
   #afterCreateElement() {
     this.#makeTaskDraggable();
+    this.#setEditButtonHandler();
   }
 
   #makeTaskDraggable() {
@@ -44,5 +48,18 @@ export default class TaskComponent extends AbstractComponent {
     this.element.addEventListener('dragstart', (event) => {
       event.dataTransfer.setData('text/plain', this.task.id);
     });
+  }
+
+  #setEditButtonHandler() {
+    const editButton = this.element.querySelector('.task__edit');
+    if (editButton && this.#handleEditClick) {
+      editButton.addEventListener('click', this.#editClickHandler);
+    }
+  }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.#handleEditClick(this.task);
   }
 }

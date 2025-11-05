@@ -208,3 +208,52 @@ body {
     background-color: #ef9a9a;
     color: #b71c1c;
 }
+.task__edit {
+  width: 20px;
+  height: 20px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1000; 
+}
+.task--edit {
+  background: #f0f8ff;
+  border: 2px solid #007bff;
+}
+
+.task-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-edit-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.task-edit-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.task-edit-save {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-edit-cancel {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
