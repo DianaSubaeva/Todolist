@@ -9,7 +9,6 @@ const END_POINT = 'https://6908ce0b2d902d0651b1c737.mockapi.io';
 const bodyContainer = document.querySelector('.board-app');
 const formContainer = document.querySelector('.add-task-form');
 const taskBoardContainer = document.querySelector('.task-board');
-console.log('Контейнеры:', { bodyContainer, formContainer, taskBoardContainer }); // Для отладки
 const taskModel = new TaskModel({
   tasksApiService: new TasksApiService(END_POINT)
 });

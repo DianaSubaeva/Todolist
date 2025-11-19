@@ -42,7 +42,6 @@ export default class TasksModel extends Observable {
     }
   }
 
-  // ДОБАВЛЕННЫЙ МЕТОД ДЛЯ РЕДАКТИРОВАНИЯ ЗАДАЧИ
   async updateTask(taskId, newTitle) {
     const task = this.#boardTasks.find(task => task.id === taskId);
     if (task) {
@@ -55,7 +54,7 @@ export default class TasksModel extends Observable {
         this._notify(UserAction.UPDATE_TASK, task);
       } catch (err) {
         console.error('Ошибка при обновлении задачи на сервер:', err);
-        task.title = previousTitle; // Откатываем при ошибке
+        task.title = previousTitle; 
         throw err;
       }
     }
