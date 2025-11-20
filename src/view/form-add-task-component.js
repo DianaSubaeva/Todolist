@@ -44,5 +44,5 @@ export default class FormAddTaskComponent extends AbstractComponent {
     } else {
       console.error('handleClick is not a function:', this.#handleClick);
     }
-  };
+  }; 
 }
